@@ -7,6 +7,11 @@ const app = express();
 require('./models/home');
 const Home = mongoose.model('Home')
 
+require('./models/produto');
+const Produto = mongoose.model('Produto')
+
+
+
 //recebe o json e envia pro banco
 app.use(express.json ());
 
@@ -42,14 +47,27 @@ app.get( "/home" , ( req , res) => {
             message: "Erro: Nenhum registro encontrado"
         })
     })
-
-
 });
 
+//deletar produto
+app.delete("/home/:id" , (req,res) =>{
+    const home = Home.deleteOne({_id: req.params.id}, (err) =>{
+        if(err){
+            return res.status(400).json({
+                error: true,
+                message: "error produto não foi apagado"
+            });
+        }
+        return res.status(200).json({
+            error: false,
+            message: " produto  foi apagado"
+        })
+    } )
+});
 
 //cadastrar produto
 app.post("/home", (req, res) => {
-    Home.create(req.body, (err) => {
+    Produtos.create(req.body, (err) => {
         if(err) return res.status(400).json({
             error: true,
             message: "Erro: Conteudo da pagina home não cadastrado com sucesso"
@@ -59,6 +77,39 @@ app.post("/home", (req, res) => {
     return res.json({
         error: false,
         message: " Conteudo da pagina home  cadastrado com sucesso"
+    })
+})
+
+
+
+
+//REGISTRAR PRODUTOS
+
+app.get( "/produto" , ( req , res) => {
+
+    Produto.find({}).then((produto) => {
+        return res.json({
+            produto
+        })
+    }).catch((err) => {
+        return res.status(400).json({
+            error: true,
+            message: "Erro: Nenhum registro encontrado"
+        })
+    })
+});
+
+app.post("/produto", (req, res) => {
+    Produto.create(req.body, (err) => {
+        if(err) return res.status(400).json({
+            error: true,
+            message: "Erro: Conteudo da pagina produto não cadastrado com sucesso"
+        })
+    })
+
+    return res.json({
+        error: false,
+        message: " Registro do produto cadastrado com sucesso"
     })
 })
 
